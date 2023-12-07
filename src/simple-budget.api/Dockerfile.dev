@@ -1,0 +1,15 @@
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+USER app
+WORKDIR /app/src
+
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+ARG BUILD_CONFIGURATION=debug
+WORKDIR /app/src
+COPY simple-budget.api.csproj .
+COPY . .
+RUN dotnet restore "./simple-budget.api.csproj"
+RUN dotnet build "./simple-budget.api.csproj" -c $BUILD_CONFIGURATION -o /app/build
+
+FROM build AS dev
+ENV DOTNET_URLS=http://+:5036
+CMD ["dotnet", "watch", "run"]
