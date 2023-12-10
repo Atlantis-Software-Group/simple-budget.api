@@ -11,5 +11,4 @@ RUN dotnet restore "./simple-budget.api.csproj"
 RUN dotnet build "./simple-budget.api.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS dev
-ENV DOTNET_URLS=http://+:5036
 CMD ["dotnet", "watch", "run"]
