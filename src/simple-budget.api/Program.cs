@@ -53,7 +53,7 @@ builder.Services
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, (options) =>
                 {
                     options.Authority = builder.Configuration["Authentication:Schemes:Bearer:Authority"];
-                    options.MapInboundClaims = true;
+                    options.MapInboundClaims = false;
                     options.RequireHttpsMetadata = true;
                     options.TokenValidationParameters = new TokenValidationParameters()
                     {
@@ -62,7 +62,13 @@ builder.Services
                         ValidIssuer = builder.Configuration["Authentication:Schemes:Bearer:ValidIssuer"],
                         ValidateLifetime = true
                     };
+                    options.Events = new JwtBearerEvents() {
+                        OnTokenValidated = JwtEventHandlers.OnJwtTokenValidated
+                    };
                 });
+
+builder.Services.AddHttpClient();
+builder.Services.AddTransient<IGetUserInfoService, GetUserInfoService>();
 
 builder.Host.UseSerilog((context, configuration) =>
 {
