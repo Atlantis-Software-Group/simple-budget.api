@@ -1,9 +1,8 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS dev
-ARG BUILD_CONFIGURATION=debug
 WORKDIR /app/src
 COPY . .
 RUN dotnet restore "./simple-budget.api.csproj"
-RUN dotnet build "./simple-budget.api.csproj" -c $BUILD_CONFIGURATION
+RUN dotnet build "./simple-budget.api.csproj"
 
-#ENTRYPOINT [ "dotnet", "bin\\debug\\net8.0\\simple-budget.api.dll" ]
-ENTRYPOINT [ "/bin/sh", "-c", "./entrypoint.sh && dotnet ./bin/debug/net8.0/simple-budget.api.dll" ]
+RUN chmod 755 ./entrypoint.sh
+ENTRYPOINT [ "sh", "-c", "./entrypoint.sh" ]
