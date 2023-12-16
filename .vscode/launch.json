@@ -1,14 +1,14 @@
 {
-    "configurations": [
-        {
-            "name": "Simple-Budget.API",
-            "type": "docker",
-            "request": "attach",
-            "platform": "netCore",
-            "processName": "dotnet",
-            "sourceFileMap": {
-                "/app/src": "src/simple-budget.api"
-            }
-        }
-    ]
+  "configurations": [
+    {
+      "name": "Simple-Budget.API",
+      "type": "docker",
+      "request": "attach",
+      "platform": "netCore",
+      "processName": "simple-budget.api",
+      "sourceFileMap": {
+        "/app/src": "${workspaceFolder}/src/simple-budget.api"
+      }
+    }
+  ]
 }
