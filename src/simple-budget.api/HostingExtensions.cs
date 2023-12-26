@@ -2,6 +2,7 @@
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using Serilog.Exceptions;
 
 namespace simple_budget.api;
 
@@ -72,9 +73,18 @@ public static class HostingExtensions
 
     public static ConfigureHostBuilder ConfigureHost(this ConfigureHostBuilder host)
     {
-        host.UseSerilog((context, configuration) =>
+        host.UseSerilog((context, services, configuration) =>
         {
-            configuration.ReadFrom.Configuration(context.Configuration);
+            IConfiguration config = context.Configuration;
+            string seqUrl = config["Seq:ServerUrl"] ?? string.Empty;
+
+            configuration
+                .MinimumLevel.Debug()
+                .Enrich.WithProperty("Application", "SimpleBudget.API")
+                .Enrich.WithExceptionDetails()
+                .Enrich.FromLogContext()
+                .WriteTo.Seq(seqUrl)
+                .WriteTo.Console(restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information);
         });
         return host;
     }
