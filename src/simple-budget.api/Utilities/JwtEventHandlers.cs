@@ -13,7 +13,7 @@ public static class JwtEventHandlers
             IGetUserInfoService getUserInfoService = scope.ServiceProvider.GetRequiredService<IGetUserInfoService>();
             string authorityUrl = ctx.Options.Authority!;   
             string token = ctx.Request.Headers["Authorization"]!;
-            ctx.Principal = await getUserInfoService.GetUserInfo(ctx.Principal, authorityUrl, token);
+            ctx.Principal = await getUserInfoService.GetUserInfo(ctx.Principal!, authorityUrl, token);
         }
     }
 }

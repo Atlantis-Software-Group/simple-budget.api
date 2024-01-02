@@ -4,8 +4,8 @@
       "name": "Simple-Budget.API",
       "type": "docker",
       "request": "attach",
-      "platform": "netCore",
-      "processName": "simple-budget.api",
+      "platform": "netCore",      
+      "processId": "${command:pickRemoteDockerProcess}",
       "sourceFileMap": {
         "/app/src": "${workspaceFolder}/src/simple-budget.api"
       }
