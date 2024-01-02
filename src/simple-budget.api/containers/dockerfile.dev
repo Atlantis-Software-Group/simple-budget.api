@@ -25,4 +25,4 @@ COPY ./api/src/simple-budget.api ./simple-budget.api
 WORKDIR /app/src/simple-budget.api
 RUN dotnet build ./simple-budget.api.csproj
 
-ENTRYPOINT [ "dotnet", "watch", "./bin/Debug/net8.0/simple-budget.api.dll" ]
+ENTRYPOINT [ "dotnet", "watch", "run", "./bin/Debug/net8.0/simple-budget.api.dll" ]
