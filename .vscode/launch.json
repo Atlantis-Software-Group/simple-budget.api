@@ -1,6 +1,45 @@
 {
   "configurations": [
     {
+        "name": "DbMigrator CreateSeedScript",
+        "type": "coreclr",
+        "request": "launch",
+        "preLaunchTask": "build migrator",
+        "program": "${workspaceFolder}/src/simple-budget.api.data.migrator/bin/Debug/net8.0/simple-budget.api.data.migrator.dll",
+        "args": ["-migrate", "-createSeedScript", "-scriptName AddRoles", "-dbContextName ApplicationDb", "-migrationName 20240106031958_InitialCreate", "-environmentNames Development Local"],
+        "cwd": "${workspaceFolder}/src/simple-budget.api.data.migrator",
+        "stopAtEntry": false,
+        "console": "internalConsole",
+        "env": {
+            "DOTNET_ENVIRONMENT":"Local",
+        }
+    },
+    {
+        "name": "DbMigrator Migrate",
+        "type": "coreclr",
+        "request": "launch",
+        "preLaunchTask": "build migrator",
+        "program": "${workspaceFolder}/src/simple-budget.api.data.migrator/bin/Debug/net8.0/simple-budget.api.data.migrator.dll",
+        "args": ["-migrate"],
+        "cwd": "${workspaceFolder}/src/simple-budget.api.data.migrator",
+        "stopAtEntry": false,
+        "console": "internalConsole",
+        "env": {
+            "DOTNET_ENVIRONMENT":"Local",
+            "ConnectionStrings__TransactionDb":"Server=localhost,3107;Initial Catalog=TransactionDb;User ID=sa;Password=P@ssw0rd;Encrypt=False;trusted_connection=False;Persist Security Info=False",
+        }
+    },
+    {
+        "name": "DbMigrator",
+        "type": "docker",
+        "request": "attach",
+        "platform": "netCore",
+        "processName": "asg.data.migrator",
+        "sourceFileMap": {
+            "/app/src/asg.identity.data.migrator": "${workspaceFolder}/src/asg.identity.data.migrator"
+        }
+    },
+    {
       "name": "Simple-Budget.API",
       "type": "docker",
       "request": "attach",

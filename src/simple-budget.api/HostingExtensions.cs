@@ -50,7 +50,7 @@ public static class HostingExtensions
         {
             options.Authority = configuration["Authentication:Schemes:Bearer:Authority"];
             options.MapInboundClaims = false;
-            options.RequireHttpsMetadata = true;
+            options.RequireHttpsMetadata = true;            
             options.TokenValidationParameters = new TokenValidationParameters()
             {
                 ValidateAudience = false,

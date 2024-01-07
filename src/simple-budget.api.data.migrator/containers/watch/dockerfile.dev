@@ -1,0 +1,3 @@
+FROM simplebudget/api/dbmigrator:1.1.0 as base 
+WORKDIR /app/src/simple-budget.api.data.migrator
+ENTRYPOINT [ "dotnet", "watch", "run", "./bin/Debug/net8.0/simple-budget.api.data.migrator.dll", "-migrate" ]
