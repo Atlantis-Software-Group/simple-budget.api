@@ -1,4 +1,6 @@
-﻿namespace simple_budget.api.data;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace simple_budget.api.data;
 
 public class Entity
 {

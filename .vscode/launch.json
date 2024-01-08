@@ -6,7 +6,7 @@
         "request": "launch",
         "preLaunchTask": "build migrator",
         "program": "${workspaceFolder}/src/simple-budget.api.data.migrator/bin/Debug/net8.0/simple-budget.api.data.migrator.dll",
-        "args": ["-migrate", "-createSeedScript", "-scriptName AddRoles", "-dbContextName ApplicationDb", "-migrationName 20240106031958_InitialCreate", "-environmentNames Development Local"],
+        "args": ["-migrate", "-createSeedScript", "-scriptName AddSystemUser", "-dbContextName ApplicationDb", "-migrationName 20240106031958_InitialCreate", "-environmentNames Development Local"],
         "cwd": "${workspaceFolder}/src/simple-budget.api.data.migrator",
         "stopAtEntry": false,
         "console": "internalConsole",
@@ -46,7 +46,7 @@
       "platform": "netCore",      
       "processId": "${command:pickRemoteDockerProcess}",
       "sourceFileMap": {
-        "/app/src": "${workspaceFolder}/src/simple-budget.api"
+        "/app/src/simple-budget.api": "${workspaceFolder}/src/simple-budget.api"
       }
     }
   ]

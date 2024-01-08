@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Exceptions;
+using simple_budget.api.data;
 
 namespace simple_budget.api;
 
@@ -58,14 +61,24 @@ public static class HostingExtensions
                 ValidIssuer = configuration["Authentication:Schemes:Bearer:ValidIssuer"],
                 ValidateLifetime = true
             };
-            options.Events = new JwtBearerEvents()
-            {
+
+            options.Events = new JwtBearerEvents {
                 OnTokenValidated = JwtEventHandlers.OnJwtTokenValidated
             };
         });
 
+        var TransactionDbConnectionString = configuration.GetConnectionString("TransactionDb");
+
+        services.AddDbContext<ApplicationDbContext>(options =>
+        {                    
+            options.UseSqlServer(TransactionDbConnectionString);            
+        });
+
+        services.AddSingleton(TimeProvider.System);
         services.AddHttpClient();
-        services.AddTransient<IGetUserInfoService, GetUserInfoService>();
+        services.AddHttpContextAccessor();
+        services.AddScoped<IGetUserInfoService, GetUserInfoService>();
+        services.AddScoped<IClaimsTransformation, ApiClaimsTranformerService>();
         services.AddHealthChecks();
 
         return services;

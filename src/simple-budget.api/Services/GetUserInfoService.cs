@@ -19,7 +19,9 @@ public class GetUserInfoService : IGetUserInfoService
     {
         User = user;
         Logger.LogInformation("Starting Get UserInfo - Token: {token}", token);
+        
         string justToken = token.Split(' ')[1];
+
         if ( string.IsNullOrWhiteSpace(authorityUrl) )
             throw new ArgumentNullException(nameof(authorityUrl), "Authority URL cannot be null");
         
