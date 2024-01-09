@@ -6,6 +6,7 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Exceptions;
 using simple_budget.api.data;
+using simple_budget.api.data.Transactions;
 
 namespace simple_budget.api;
 
@@ -80,6 +81,7 @@ public static class HostingExtensions
         services.AddScoped<IGetUserInfoService, GetUserInfoService>();
         services.AddScoped<IClaimsTransformation, ApiClaimsTranformerService>();
         services.AddHealthChecks();
+        services.AddScoped<ITransactionRepository, TransactionRepository>();
 
         return services;
     }
