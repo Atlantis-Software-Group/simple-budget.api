@@ -31,7 +31,7 @@ public class ApiClaimsTranformerService : IClaimsTransformation
         if ( !principal.HasClaim(x => x.Type == "id" ) )
             return principal;
         
-        if ( !principal.HasClaim(x => x.Type == ClaimTypes.Role) )
+        if ( principal.HasClaim(x => x.Type == ClaimTypes.Role) )
             return principal; 
 
         string? identityId = principal.Claims.Where(c => c.Type == "id")
