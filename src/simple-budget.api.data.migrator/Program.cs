@@ -69,6 +69,8 @@ public class Program
                     options.UseSqlServer(TransactionDbConnectionString, dbOpts => dbOpts.MigrationsAssembly(typeof(Program).Assembly.FullName));
                     options.AddInternalServiceProvider();
                 });
+
+                services.AddSingleton(TimeProvider.System);
             });
 
             IHost host = builder.Build();

@@ -20,9 +20,10 @@ RUN dotnet nuget add source /app/packages -n local
 # Copy Main Project and dependencies
 WORKDIR /app/src
 COPY ./api/src/simple-budget.api ./simple-budget.api
+COPY ./api/src/simple-budget.api.data ./simple-budget.api.data
 
 # Build package
 WORKDIR /app/src/simple-budget.api
 RUN dotnet build ./simple-budget.api.csproj
 
-ENTRYPOINT [ "dotnet", "watch", "run", "./bin/Debug/net8.0/simple-budget.api.dll" ]
+ENTRYPOINT [ "dotnet", "watch", "run", "./simple-budget.api.csproj" ]

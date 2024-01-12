@@ -1,8 +1,14 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Exceptions;
+using simple_budget.api.data;
+using simple_budget.api.data.Transactions;
+using simple_budget.api.interfaces;
+using simple_budget.api.Services;
 
 namespace simple_budget.api;
 
@@ -58,15 +64,27 @@ public static class HostingExtensions
                 ValidIssuer = configuration["Authentication:Schemes:Bearer:ValidIssuer"],
                 ValidateLifetime = true
             };
-            options.Events = new JwtBearerEvents()
-            {
+
+            options.Events = new JwtBearerEvents {
                 OnTokenValidated = JwtEventHandlers.OnJwtTokenValidated
             };
         });
 
+        var TransactionDbConnectionString = configuration.GetConnectionString("TransactionDb");
+
+        services.AddDbContext<ApplicationDbContext>(options =>
+        {                    
+            options.UseSqlServer(TransactionDbConnectionString);            
+        });
+
+        services.AddSingleton(TimeProvider.System);
         services.AddHttpClient();
-        services.AddTransient<IGetUserInfoService, GetUserInfoService>();
+        services.AddHttpContextAccessor();
+        services.AddScoped<IGetUserInfoService, GetUserInfoService>();
+        services.AddScoped<IClaimsTransformation, ApiClaimsTranformerService>();
         services.AddHealthChecks();
+        services.AddScoped<ITransactionRepository, TransactionRepository>();
+        services.AddScoped<IUserService, UserService>();
 
         return services;
     }
@@ -79,7 +97,9 @@ public static class HostingExtensions
             string seqUrl = config["Seq:ServerUrl"] ?? string.Empty;
 
             configuration
-                .MinimumLevel.Debug()
+                .MinimumLevel.Information()
+                .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
+                .MinimumLevel.Override("Microsoft.EntityFrameworkCore", Serilog.Events.LogEventLevel.Information)
                 .Enrich.WithProperty("Application", "SimpleBudget.API")
                 .Enrich.WithExceptionDetails()
                 .Enrich.FromLogContext()
