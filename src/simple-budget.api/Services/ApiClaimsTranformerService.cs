@@ -28,11 +28,11 @@ public class ApiClaimsTranformerService : IClaimsTransformation
 
     public async Task<ClaimsPrincipal> TransformAsync(ClaimsPrincipal principal)
     {
-        if ( !principal.HasClaim(x => x.Type == "id" ) )
-            return principal;
-        
         if ( principal.HasClaim(x => x.Type == ClaimTypes.Role) )
             return principal; 
+
+        if ( !principal.HasClaim(x => x.Type == "id" ) )
+            return principal;        
 
         string? identityId = principal.Claims.Where(c => c.Type == "id")
                                             .Select(c => c.Value)
@@ -44,7 +44,8 @@ public class ApiClaimsTranformerService : IClaimsTransformation
         long userId = await Context.IdentityUserMappings.Where(iu => iu.IdentityUserId == identityId)
                                             .Select(iu => iu.UserId)
                                             .SingleOrDefaultAsync();
-        
+        ClaimsIdentity identity = new ClaimsIdentity();
+
         if ( userId == 0 )
         {
             long systemUserId = await Context.Users.Where(u => u.Name == "System User")
@@ -72,9 +73,7 @@ public class ApiClaimsTranformerService : IClaimsTransformation
             if ( userRole is null )
                 return principal;
 
-            ClaimsIdentity identity = new ClaimsIdentity();
             identity.AddClaim(new Claim(ClaimTypes.Role, userRole.Name));
-            principal.AddIdentity(identity);
 
             UserRole newUserRole = new UserRole{ Role = userRole, RoleId = userRole.Id };
 
@@ -101,20 +100,46 @@ public class ApiClaimsTranformerService : IClaimsTransformation
 
             await Context.IdentityUserMappings.AddAsync(mapping);
 
-            await Context.SaveChangesAsync();
+            try
+            {
+                await Context.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e, "Error encountered while attempting to setup a new user: {@user}", user);
+                throw;
+            }
+            userId = user.Id;
         }        
         else
         {            
-            Role? userRole = await Context.Roles.Where(r => r.Name == "User")
-                                                .FirstOrDefaultAsync();
+            Role? userRole = await Context.Roles
+                                            .Join(
+                                                Context.UserRoles,
+                                                r => r.Id,
+                                                ur => ur.RoleId,
+                                                (role, userRole) => new {
+                                                    id = role.Id,
+                                                    name = role.Name,
+                                                    userId = userRole.UserId
+                                                }
+                                            )
+                                            .Where(x => x.userId == userId)
+                                            .Select(x => new Role(){
+                                                Id = x.id,
+                                                Name = x.name
+                                            })
+                                            .FirstOrDefaultAsync();
 
             if ( userRole is null )
                 return principal;
 
-            ClaimsIdentity identity = new ClaimsIdentity();
+            
             identity.AddClaim(new Claim(ClaimTypes.Role, userRole.Name));
-            principal.AddIdentity(identity);
         }
+        
+        identity.AddClaim(new Claim("UserId", userId.ToString()));
+        principal.AddIdentity(identity);
 
         return principal;
     }

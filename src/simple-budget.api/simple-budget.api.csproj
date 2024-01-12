@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\simple-budget.api.data\simple-budget.api.data.csproj" />
+    <ProjectReference Include="..\simple-budget.api.interfaces\simple-budget.api.interfaces.csproj" />
   </ItemGroup>
 
 </Project>

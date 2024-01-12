@@ -7,6 +7,8 @@ using Serilog;
 using Serilog.Exceptions;
 using simple_budget.api.data;
 using simple_budget.api.data.Transactions;
+using simple_budget.api.interfaces;
+using simple_budget.api.Services;
 
 namespace simple_budget.api;
 
@@ -82,6 +84,7 @@ public static class HostingExtensions
         services.AddScoped<IClaimsTransformation, ApiClaimsTranformerService>();
         services.AddHealthChecks();
         services.AddScoped<ITransactionRepository, TransactionRepository>();
+        services.AddScoped<IUserService, UserService>();
 
         return services;
     }
@@ -94,7 +97,9 @@ public static class HostingExtensions
             string seqUrl = config["Seq:ServerUrl"] ?? string.Empty;
 
             configuration
-                .MinimumLevel.Debug()
+                .MinimumLevel.Information()
+                .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
+                .MinimumLevel.Override("Microsoft.EntityFrameworkCore", Serilog.Events.LogEventLevel.Information)
                 .Enrich.WithProperty("Application", "SimpleBudget.API")
                 .Enrich.WithExceptionDetails()
                 .Enrich.FromLogContext()
